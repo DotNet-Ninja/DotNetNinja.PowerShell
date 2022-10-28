@@ -74,7 +74,7 @@ function Get-KubeVersions {
 function Remove-KindCluster{
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$false, Position=0)]
+        [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         [string] $Name = "KindCluster"
     )
     process {
@@ -86,8 +86,21 @@ function Remove-KindCluster{
 function Install-IngressNginx {    
     process {
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.4.0/deploy/static/provider/baremetal/deploy.yaml
+        Write-Host "Waiting for ingress controller installation to complete."
         kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller -n ingress-nginx --timeout=300s
         kubectl wait --for=condition=Complete job -l app.kubernetes.io/component=admission-webhook -n ingress-nginx --timeout=300s
+    }
+}
+
+function Get-KindClusters {
+    process {
+        Write-Output (kind get clusters)
+    }
+}
+
+function Install-KubeAddons {
+    process {
+        Install-IngressNginx
     }
 }
 
@@ -97,3 +110,5 @@ Export-ModuleMember -Function New-KindCluster
 Export-ModuleMember -Function Get-KubeVersions
 Export-ModuleMember -Function Remove-KindCluster
 Export-ModuleMember -Function Install-IngressNginx
+Export-ModuleMember -Function Get-KindClusters
+Export-ModuleMember -Function Install-KubeAddons
