@@ -24,12 +24,7 @@ function Initialize-GitHubRepository{
         while($response -ne "y")
     }
 
-    $CloneDirectory = $RepositoryUrl
-    if($RepositoryUrl.EndsWith(".git")){
-        $CloneDirectory = $RepositoryUrl.Substring(0, $RepositoryUrl.LastIndexOf(".git"))
-    }
-    $segments = $CloneDirectory -split "/" | Where-Object { $_.Length -gt 0 }
-    $CloneDirectory = $segments[$segments.Length-1]    
+    $CloneDirectory = $RepositoryUrl.Substring(0, $RepositoryUrl.LastIndexOf(".git")).Substring($RepositoryUrl.LastIndexOf("/")+1)
 
     Write-Message "Cloning Repository '$RepositoryUrl'"
     git clone $RepositoryUrl
@@ -154,8 +149,8 @@ function Set-DefaultDiffTool{
     git config --global mergetool.bc3.path "c:/program files/beyond compare 4/bcomp.exe"
 }
 
-function Start-RepositoryWebUI{
-    $url = git remote get-url origin
+function Start-GitRemoteUI{
+    $url = Get-GitRemoteUrl
     if([string]::IsNullOrEmpty($url)){
         Write-Warning "No remote url found."
         return
@@ -174,6 +169,13 @@ function Start-RepositoryWebUI{
     Start-Process ($url)
 }
 
+function Get-GitRemoteUrl{
+    $url = git remote get-url origin
+    return $url
+}
+
+Set-Alias Start-RepositoryWebUI Start-GitRemoteUI
+
 function Write-Message{
     param(
         [Parameter(Mandatory=$true, Position=0)]
@@ -185,4 +187,5 @@ function Write-Message{
 Export-ModuleMember -Function Initialize-GitHubRepository
 Export-ModuleMember -Function Initialize-AzureDevOpsRepository
 Export-ModuleMember -Function Set-DefaultDiffTool
-Export-ModuleMember -Function Start-RepositoryWebUI
+Export-ModuleMember -Function Start-GitRemoteUI
+Export-ModuleMember -Function Get-GitRemoteUrl
