@@ -115,7 +115,41 @@ function Deploy-Modules {
     
 }
 
+function Start-DefaultSqlContainer{
+    Push-Location
+    Set-Location C:\Docker\Compose\SqlServer\
+    docker-compose up -d
+    Pop-Location
+}
+
+function Stop-DefaultSqlContainer{
+    Push-Location
+    Set-Location C:\Docker\Compose\SqlServer\
+    docker-compose down
+    Pop-Location
+}
+function Start-Dojo{
+    Push-Location
+    Set-Location C:\Code\DotNetNinja.Dojo\
+    docker-compose up -d
+    Pop-Location
+}
+
+function Stop-Dojo{
+    Push-Location
+    Set-Location C:\Code\DotNetNinja.Dojo\
+    docker-compose down
+    Pop-Location
+}
+
+
+
 Export-ModuleMember -Function Move-DesktopItems
 Export-ModuleMember -Function Get-ItemSize
 Export-ModuleMember -Function Format-ByteSize
 Export-ModuleMember -Function Deploy-Modules
+Export-ModuleMember -Function Start-DefaultSqlContainer
+Export-ModuleMember -Function Stop-DefaultSqlContainer
+Export-ModuleMember -Function Start-Dojo
+Export-ModuleMember -Function Stop-Dojo
+
